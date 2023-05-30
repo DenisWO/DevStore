@@ -2,7 +2,6 @@
 using DevStore.Identity.API.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace DevStore.Identity.API.Data
 {
@@ -13,6 +12,7 @@ namespace DevStore.Identity.API.Data
             
         }
 
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -1,4 +1,4 @@
-using DevStore.Identity.API.Extensions;
+using DevStore.Identity.API.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -28,11 +28,15 @@ namespace DevStore.Identity.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentityConfiguration(Configuration);
             services.AddAppConfiguration(Configuration);
+            services.AddSwaggerConfiguration();
+            services.AddEmailSenderConfiguration(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwaggerConfiguration();
             app.UseAppConfiguration(env);
         }
     }
