@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text;
 
 namespace DevStore.API.Core.Users.Extensions
 {
@@ -23,7 +25,7 @@ namespace DevStore.API.Core.Users.Extensions
                 throw new ArgumentException(nameof(principal));
             }
 
-            var claim = principal.FindFirst("email");
+            var claim = principal.FindFirst(x => x.Type.Contains("email"));
             return claim?.Value;
         }
 

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using DevStore.API.Core.Users.Interfaces;
 using DevStore.API.Core.Users;
 using Microsoft.AspNetCore.Http;
+using DevStore.Identity.API.Services;
 
 namespace DevStore.Identity.API.Configuration
 {
@@ -21,6 +22,7 @@ namespace DevStore.Identity.API.Configuration
             services.AddScoped<IUserClaimsPrincipalFactory<User>, CustomClaimsFactory>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IAspNetUser, AspNetUser>();
+            services.AddScoped<AuthenticationService>();
 
             services.AddAutoMapper(typeof(Startup));
 

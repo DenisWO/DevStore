@@ -10,6 +10,8 @@ using DevStore.Identity.API.Validators;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Net.Http;
+using Microsoft.IdentityModel.Logging;
 
 namespace DevStore.Identity.API.Configuration
 {
@@ -17,6 +19,30 @@ namespace DevStore.Identity.API.Configuration
     {
         public static IServiceCollection AddIdentityConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentity<User, IdentityRole>(opt =>
+            {
+                opt.Password.RequiredLength = 8;
+                opt.Password.RequireDigit = true;
+                opt.Password.RequireUppercase = true;
+
+                opt.User.RequireUniqueEmail = true;
+
+                opt.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
+
+                opt.Lockout.AllowedForNewUsers = true;
+                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+                opt.Lockout.MaxFailedAccessAttempts = 3;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders()
+            .AddTokenProvider<EmailConfirmationTokenProvider<User>>("emailconfirmation")
+            .AddPasswordValidator<CustomPasswordValidator<User>>();
+
+            IdentityModelEventSource.ShowPII = true;
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -29,37 +55,17 @@ namespace DevStore.Identity.API.Configuration
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuer = true,
+                    ValidateIssuer = false,
                     ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
+
                     ValidAudience = configuration["JWT:ValidAudience"],
-                    ValidIssuer = configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+                    //ValidIssuer = configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]))
                 };
             });
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddIdentity<User, IdentityRole>(opt =>
-            {
-                opt.Password.RequiredLength = 8;
-                opt.Password.RequireDigit = true;
-                opt.Password.RequireUppercase = true;
-
-                opt.User.RequireUniqueEmail = true;
-
-                opt.SignIn.RequireConfirmedEmail = true;
-
-                opt.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
-
-                opt.Lockout.AllowedForNewUsers = true;
-                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
-                opt.Lockout.MaxFailedAccessAttempts = 3;
-            })
-             .AddEntityFrameworkStores<ApplicationDbContext>()
-             .AddDefaultTokenProviders()
-             .AddTokenProvider<EmailConfirmationTokenProvider<User>>("emailconfirmation")
-             .AddPasswordValidator<CustomPasswordValidator<User>>();
 
             services.Configure<DataProtectionTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromHours(2));
             services.Configure<EmailConfirmationTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromDays(3));

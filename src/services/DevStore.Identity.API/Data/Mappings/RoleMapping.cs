@@ -11,8 +11,8 @@ namespace DevStore.Identity.API.Data.Mappings
             builder.HasData(
                 new IdentityRole()
                 {
-                    Name = "Client",
-                    NormalizedName = "CLIENT",
+                    Name = "User",
+                    NormalizedName = "USER",
                 },
                 new IdentityRole()
                 {

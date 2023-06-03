@@ -67,6 +67,12 @@ namespace DevStore.Identity.API.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -119,15 +125,15 @@ namespace DevStore.Identity.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3057cec7-36f0-42e7-9a70-fd25a911c5a2",
-                            ConcurrencyStamp = "028a8208-f6ab-4284-8ae7-ec5a85d640b7",
-                            Name = "Client",
-                            NormalizedName = "CLIENT"
+                            Id = "75140889-a7af-40bb-8dc8-61d0df46c64b",
+                            ConcurrencyStamp = "51f47b92-6048-441a-ab26-fbf6744cd604",
+                            Name = "User",
+                            NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "ea34fd43-afb2-4f87-9e56-5a1ab7acd38c",
-                            ConcurrencyStamp = "b85547ba-a7e9-4411-b6c0-2df21fe7f868",
+                            Id = "4f41ff25-a48c-4691-b8e8-361d8492b6b9",
+                            ConcurrencyStamp = "c0cc5e68-53b3-48e0-9772-35bf58aea5ff",
                             Name = "Admin",
                             NormalizedName = "ADMINISTRATOR"
                         });

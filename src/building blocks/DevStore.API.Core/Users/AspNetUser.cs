@@ -30,7 +30,14 @@ namespace DevStore.API.Core.Users
 
         public string GetUserToken()
         {
-            return IsAuthenticated() ? _accessor.HttpContext.User.GetUserToken() : "";
+            //return IsAuthenticated() ? _accessor.HttpContext.User.GetUserToken() : "";
+            if (IsAuthenticated())
+            {
+                _accessor.HttpContext.Request.Headers.TryGetValue("Authorization", out Microsoft.Extensions.Primitives.StringValues authorizationToken);
+                return authorizationToken.ToString().Replace("Bearer ", "");
+            }
+
+            return "";
         }
 
         public string GetUserRefreshToken()
